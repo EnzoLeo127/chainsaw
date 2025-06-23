@@ -1,0 +1,28 @@
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local rootPart = character:WaitForChild("HumanoidRootPart")
+
+local coinsFolder = workspace:WaitForChild("Programming"):WaitForChild("Coins")
+
+local label = localPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui"):WaitForChild("Coins"):WaitForChild("TextLabel")
+
+local function getCoinCount()
+    local count = tonumber(label.Text)
+    return count or 0
+end
+
+for _, obj in ipairs(coinsFolder:GetDescendants()) do
+    if obj:IsA("Model") and obj.Name == "Coin" then
+        local primaryPart = obj.PrimaryPart or obj:FindFirstChildWhichIsA("BasePart")
+        if primaryPart then
+            local previousCount = getCoinCount()
+            rootPart.CFrame = CFrame.new(primaryPart.Position)
+
+            local startTime = tick()
+            repeat
+                task.wait()
+            until getCoinCount() >= previousCount + 1 or tick() - startTime > 0.2
+        end
+    end
+end
